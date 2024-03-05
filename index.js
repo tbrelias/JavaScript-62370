@@ -1,57 +1,120 @@
-function saludar(){
-    alert("Bienvenidos a TuPrest");
-    const nombreApellido = prompt("Ingrese su Nombre y Apellido");
-    alert("Hola " + nombreApellido);
-    alert("Tené hoy el dinero que necesitas");
+const Productos = [
+    {
+        id: '001',
+        marca: "Jonhnnie Walker",
+        nombre: "Whisky Blue Label",
+        region: "Escocia",
+        stock: 13,
+        precio: 58500  
+    },
+
+    {
+        id: '002',
+        marca: "Jonhnnie Walker",
+        nombre: "Whisky Gold Label",
+        region: "Escocia",
+        stock: 22,
+        precio: 14000  
+    },
+
+    {
+        id: '003',
+        marca: "Jonhnnie Walker",
+        nombre: "Whisky Black Label",
+        region: "Escocia",
+        stock: 18,
+        precio: 10000  
+    },
+
+    {
+        id: '004',
+        marca: "Jonhnnie Walker",
+        nombre: "Whisky Red Label",
+        region: "Escocia",
+        stock: 15,
+        precio: 5000 
+    },
+]
+
+let Carrito = []
+
+function DatosDelUsuario(){
+
+    alert ("Bienvenidos a Bebradas")
+
+    let Nombre = prompt ("Ingrese su Nombre");
+    console.log ("Su Nombre es:" + " " +Nombre)
+
+    let Apellido = prompt ("Ingrese su Apellido")
+    console.log ("Su Apellido es:" + " " +Apellido)
+
+    let DocumentoId = prompt ("Ingrese su numero de Documento")
+    console.log ("Su Numero de Documento es:" + " " +DocumentoId)
+
+    alert ("¡ Bienvenido a Bebradas" + " " + Nombre + "!")
 }
 
-saludar();
+DatosDelUsuario()
 
-const edad = parseInt(prompt("ingrese su edad"));
-console.log(edad);
+function EleccionDeProductos(){
+    let Seleccion = prompt('¡ Hola! ¿ desea comprar algun producto ? Si/No')
+    while(Seleccion != "si" && Seleccion != "no"){
+        alert('Por favor ingresa si o no')
+        Seleccion = prompt('¡ Hola! ¿ desea comprar algun producto ? Si/No')
+    }
 
-if ( edad >= 18 ){
-    
-    alert("Usted es mayor de edad y responsable a cualquier accion a la que se comprometa");
+    if (Seleccion == 'si'){
+        alert('A continuacion nuestra lista de pruductos')
+        let TodosLosProductos = Productos.map(
+            (Producto) => Producto.nombre + '' + Producto.precio + '$'
+        );
+        alert(TodosLosProductos.join(' / '))
+    } else if ( Seleccion == 'no'){
+        alert('¡Gracias por venir, Hasta pronto!')
+    }
 
-    let prestamo = prompt("Simular prestamo personal \n Ingresa \n 1 para simular \n 2 para salir" );
+    while(Seleccion != 'no'){
+        let Producto = prompt('Agrega un producto a tu carrito')
+        let Precio = 0
 
-    if ( prestamo == 1 ){
-        
-        while ( prestamo == 1 ){
-            
-            let monto = parseInt(prompt("Ingresa un monto y simulá tu préstamo"));
-            console.log(monto);
-
-            function cuotas (){
-                
-                let interes = monto * '0.5';
-                let cuota = parseInt(prompt("Elegí un plazo hasta 12 cuotas \n 1 Cuota Sin Intereses \n 3 Cuotas Sin Intereses \n 6 Cuotas Sin Intereses \n 9 Cuotas"));
-            
-                if( cuota <= 6 ){
-                   let cuotaTotal = monto / cuota;
-                   let montoTotal = cuotaTotal * cuota;
-                   alert(cuota + " cuotas de " + cuotaTotal + " En Total devolves " + montoTotal);
-                }
-
-                if( cuota > 6 ){
-                    let cuotaTotal = monto + interes;
-                    let cuotaTotalInteres = cuotaTotal / cuota;
-                    let montoTotal = cuotaTotalInteres * cuota;
-                    alert(cuota + " cuotas de " + cuotaTotalInteres + " En Total devolves " + montoTotal);
-                }
+        if(Producto == 'Whisky Blue Label' || Producto == 'Whisky Gold Label' || Producto == 'Whisky Black Label' || Producto == 'Whisky Red Label' ){
+            switch (Producto) {
+                case 'Whisky Blue Label':
+                    Precio = 58500;
+                    break;
+                case 'Whisky Blue Label':
+                    Precio = 14000;
+                    break;
+                case 'Whisky Blue Label':
+                    Precio = 10000;
+                    break;
+                case 'Whisky Blue Label':
+                    Precio = 5000;
+                    break;
+                default:
+                    break;
             }
-            
-            cuotas();
+        let Unidades = parseInt(prompt('¿ Cuantas Unidades desea ?'))
 
-            prestamo = prompt("Quieres simular otro prestamo ? \n Ingresa: \n 1 para si \n 2 para no" );
+        Carrito.push({Producto, Unidades, Precio})
+        console.log(Carrito)
+        } else {
+            alert('No tenemos disponible ese producto')
+        }
+
+        Seleccion = prompt('¿Desea seguir comprando ?')
+
+        while(Seleccion === 'no'){
+            alert('¡ Gracias por la compra, Hasta pronto!')
+            Carrito.forEach((CarritoFinal) => {
+                console.log(`Producto: ${CarritoFinal.Producto}, Unidades: ${CarritoFinal.Unidades}, total a pagar por producto ${CarritoFinal.Unidades * CarritoFinal.Precio}`)
+            })
+        break; 
         }
     }
-    
-    if( prestamo == 2){
-        alert("Gracias por visitarnos!");
-    }
-
-}else {
-    alert("Usted es menor de edad, no podemos acordar un prestamo");
 }
+
+EleccionDeProductos()
+
+const Total = Carrito.reduce((acc, el) => acc + el.Precio * el.Unidades, 0)
+alert(`El total a pagar por su compra es: ${Total}`)
