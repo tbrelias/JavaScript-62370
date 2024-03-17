@@ -1,8 +1,8 @@
-const Productos = [
+let productos = [
     {
         id: '001',
         marca: "Jonhnnie Walker",
-        nombre: "Whisky Blue Label",
+        nombre: "Whisky Jonhnnie Walker Blue Label",
         region: "Escocia",
         stock: 13,
         precio: 58500  
@@ -11,7 +11,7 @@ const Productos = [
     {
         id: '002',
         marca: "Jonhnnie Walker",
-        nombre: "Whisky Gold Label",
+        nombre: "Whisky Jonhnnie Walker Gold Label",
         region: "Escocia",
         stock: 22,
         precio: 14000  
@@ -20,7 +20,7 @@ const Productos = [
     {
         id: '003',
         marca: "Jonhnnie Walker",
-        nombre: "Whisky Black Label",
+        nombre: "Whisky Jonhnnie Walker Black Label",
         region: "Escocia",
         stock: 18,
         precio: 10000  
@@ -29,92 +29,105 @@ const Productos = [
     {
         id: '004',
         marca: "Jonhnnie Walker",
-        nombre: "Whisky Red Label",
+        nombre: "Whisky Jonhnnie Walker Red Label",
         region: "Escocia",
         stock: 15,
         precio: 5000 
     },
+
+    {
+        id: '005',
+        marca: "Jack Daniels",
+        nombre: "Whisky Jack Daniels Old",
+        region: "Estados Unidos",
+        stock: 20,
+        precio: 12000  
+    },
+
+    {
+        id: '006',
+        marca: "Jack Daniels",
+        nombre: "Whisky Jack Daniels Tennessee Honey",
+        region: "Estados Unidos",
+        stock: 15,
+        precio: 12000   
+    },
 ]
 
-let Carrito = []
+let contenedorProductos = document.getElementById("contenedorProductos")
+let carrito = document.getElementById("carrito")
+let arrayCarrito = []
 
-function DatosDelUsuario(){
-
-    alert ("Bienvenidos a Bebradas")
-
-    let Nombre = prompt ("Ingrese su Nombre");
-    console.log ("Su Nombre es:" + " " +Nombre)
-
-    let Apellido = prompt ("Ingrese su Apellido")
-    console.log ("Su Apellido es:" + " " +Apellido)
-
-    let DocumentoId = prompt ("Ingrese su numero de Documento")
-    console.log ("Su Numero de Documento es:" + " " +DocumentoId)
-
-    alert ("¡ Bienvenido a Bebradas" + " " + Nombre + "!")
+if (localStorage.getItem("carrito")) {
+    arrayCarrito = JSON.parse(localStorage.getItem("carrito"))
 }
 
-DatosDelUsuario()
+renderizarProductos(productos)
 
-function EleccionDeProductos(){
-    let Seleccion = prompt('¡ Hola! ¿ desea comprar algun producto ? Si/No')
-    while(Seleccion != "si" && Seleccion != "no"){
-        alert('Por favor ingresa si o no')
-        Seleccion = prompt('¡ Hola! ¿ desea comprar algun producto ? Si/No')
-    }
+function renderizarProductos(arrayProductos) {
+    contenedorProductos.innerHTML = ' '
+    for (const producto of arrayProductos) {
+        let tarjetaProducto = document.createElement("div")
 
-    if (Seleccion == 'si'){
-        alert('A continuacion nuestra lista de pruductos')
-        let TodosLosProductos = Productos.map(
-            (Producto) => Producto.nombre + '' + Producto.precio + '$'
-        );
-        alert(TodosLosProductos.join(' / '))
-    } else if ( Seleccion == 'no'){
-        alert('¡Gracias por venir, Hasta pronto!')
-    }
-
-    while(Seleccion != 'no'){
-        let Producto = prompt('Agrega un producto a tu carrito')
-        let Precio = 0
-
-        if(Producto == 'Whisky Blue Label' || Producto == 'Whisky Gold Label' || Producto == 'Whisky Black Label' || Producto == 'Whisky Red Label' ){
-            switch (Producto) {
-                case 'Whisky Blue Label':
-                    Precio = 58500;
-                    break;
-                case 'Whisky Blue Label':
-                    Precio = 14000;
-                    break;
-                case 'Whisky Blue Label':
-                    Precio = 10000;
-                    break;
-                case 'Whisky Blue Label':
-                    Precio = 5000;
-                    break;
-                default:
-                    break;
-            }
-        let Unidades = parseInt(prompt('¿ Cuantas Unidades desea ?'))
-
-        Carrito.push({Producto, Unidades, Precio})
-        console.log(Carrito)
+        if (producto.stock < 5 ) {
+            tarjetaProducto.className ="productosSinStock"
         } else {
-            alert('No tenemos disponible ese producto')
+            tarjetaProducto.className = "producto"
         }
 
-        Seleccion = prompt('¿Desea seguir comprando ?')
+        tarjetaProducto.id = producto.id
 
-        while(Seleccion === 'no'){
-            alert('¡ Gracias por la compra, Hasta pronto!')
-            Carrito.forEach((CarritoFinal) => {
-                console.log(`Producto: ${CarritoFinal.Producto}, Unidades: ${CarritoFinal.Unidades}, total a pagar por producto ${CarritoFinal.Unidades * CarritoFinal.Precio}`)
-            })
-        break; 
+        tarjetaProducto.innerHTML = ` 
+            <h3 class = "nombreProducto">${producto.nombre}</h3>
+            <h4> $${producto.precio}</h4>
+            <button class="botonProducto" id=${producto.id}>Agregar al carrito</button>
+        `
+
+        contenedorProductos.append(tarjetaProducto)
+
+        let botones = document.getElementsByClassName("botonProducto")
+        for (const boton of botones) {
+            boton.addEventListener("click", agregarAlCarrito)
         }
     }
 }
 
-EleccionDeProductos()
+let input = document.getElementById ("input")
+input.addEventListener("input", fnInput)
 
-const Total = Carrito.reduce((acc, el) => acc + el.Precio * el.Unidades, 0)
-alert(`El total a pagar por su compra es: ${Total}`)
+function fnInput (event) {
+    console.log(event)
+    let productosFiltrados = productos.filter (producto => producto.nombre.includes (input.value))
+    renderizarProductos (productosFiltrados)
+}
+
+function agregarAlCarrito(e) {
+    let productoBuscado = productos.find(producto => producto.id == e.target.id)
+    let posicionProducto = arrayCarrito.findIndex(producto => producto.id == e.target.id)
+    if (posicionProducto != -1) {
+        arrayCarrito[posicionProducto] = {
+            id: arrayCarrito[posicionProducto].id, nombre: arrayCarrito[posicionProducto].nombre, precio:arrayCarrito[posicionProducto].precio, unidades: arrayCarrito[posicionProducto].unidades + 1, subtotal: arrayCarrito[posicionProducto].precio * (arrayCarrito[posicionProducto].unidades + 1)
+        }
+    } else {
+        arrayCarrito.push({
+            id:productoBuscado.id, nombre:productoBuscado.nombre, precio: productoBuscado.precio, unidades: 1, subtotal: productoBuscado.precio
+        })
+    }
+
+    let carritoJSON = JSON.stringify(arrayCarrito)
+    localStorage.setItem("carrito", carritoJSON)
+
+    renderizarCarrito()
+    function renderizarCarrito() {
+        carrito.innerHTML = ""
+        for (const itemCarrito of arrayCarrito) {
+            carrito.innerHTML += `
+                <div class="itemCarrito">
+                    <h4>${itemCarrito.nombre}</h4>
+                    <h4>${itemCarrito.unidades}</h4>
+                    <h4>${itemCarrito.subtotal}</h4>
+                </div>
+            `
+        }
+    }
+}
